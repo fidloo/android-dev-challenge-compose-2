@@ -71,14 +71,14 @@ class CountdownViewModel : ViewModel() {
     fun startTimer() {
         val actualDuration = timerDuration.value?.toSeconds()?.toLong() ?: return
         _progress.postValue(1f)
-        timer = object : CountDownTimer(TimeUnit.SECONDS.toMillis(actualDuration), 1_000) {
+        timer = object : CountDownTimer(TimeUnit.SECONDS.toMillis(actualDuration), 1) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsUntilFinished = (millisUntilFinished / 1_000f).roundToInt()
                 val seconds = secondsUntilFinished % 60
                 val minutes = secondsUntilFinished / 60 % 60
                 val hours = secondsUntilFinished / (60 * 60)
                 _timerDuration.postValue(TimerDuration(hours, minutes, seconds))
-                _progress.postValue(secondsUntilFinished / actualDuration.toFloat())
+                _progress.postValue(millisUntilFinished / (actualDuration * 1000).toFloat())
             }
 
             override fun onFinish() {
@@ -109,8 +109,8 @@ data class TimerDuration(
     fun isSet() = hours != 0 || minutes != 0 || seconds != 0
     fun toCondensedFormat(): String {
         return hours.toString().padStart(2, '0') +
-            minutes.toString().padStart(2, '0') +
-            seconds.toString().padStart(2, '0')
+                minutes.toString().padStart(2, '0') +
+                seconds.toString().padStart(2, '0')
     }
 
     fun toSeconds() = hours * 60 * 60 + minutes * 60 + seconds
