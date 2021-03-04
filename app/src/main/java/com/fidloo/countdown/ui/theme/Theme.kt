@@ -52,11 +52,10 @@ fun CountdownAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Comp
         shapes = shapes,
         content = content
     )
-
 }
 
 @Composable
-fun BarsTheming(window: Window){
+fun BarsTheming(window: Window) {
     window.statusBarColor = MaterialTheme.colors.surface.toArgb()
     window.navigationBarColor = MaterialTheme.colors.surface.toArgb()
 
@@ -72,13 +71,12 @@ fun BarsTheming(window: Window){
             )
         } else {
             window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 window.decorView.systemUiVisibility =
                     window.decorView.systemUiVisibility or
-                            View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                    View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
             }
         }
-
     }
 }

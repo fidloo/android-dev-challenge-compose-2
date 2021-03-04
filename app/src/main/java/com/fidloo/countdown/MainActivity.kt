@@ -73,7 +73,6 @@ fun CountDownApp(countdownViewModel: CountdownViewModel) {
     Surface(color = MaterialTheme.colors.background) {
         AppContent(countdownViewModel)
     }
-
 }
 
 @Composable
