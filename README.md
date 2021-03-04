@@ -7,7 +7,7 @@
 Countdown is a simple countdown timer app powered by Jetpack Compose.
 
 ## :bulb: Motivation and Context
-It's very impressive how fast an app can be developed using Jetpack Compose and its underlying tools (easy animations and state management)
+It's very impressive how fast an app can be developed using Jetpack Compose and its underlying tools (easy animations and state management). The Android Dev Challenge was a great way to discover the power of Jetpack Compose.
 
 
 ## :camera_flash: Screenshots
