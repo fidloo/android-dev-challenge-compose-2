@@ -15,11 +15,16 @@
  */
 package com.fidloo.countdown.ui.theme
 
+import android.os.Build
+import android.view.View
+import android.view.Window
+import android.view.WindowInsetsController
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.toArgb
 
 private val DarkColorPalette = darkColors(
     primary = purple200,
@@ -31,15 +36,6 @@ private val LightColorPalette = lightColors(
     primary = purple500,
     primaryVariant = purple700,
     secondary = teal200
-
-        /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
 )
 
 @Composable
@@ -56,4 +52,33 @@ fun CountdownAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Comp
         shapes = shapes,
         content = content
     )
+
+}
+
+@Composable
+fun BarsTheming(window: Window){
+    window.statusBarColor = MaterialTheme.colors.surface.toArgb()
+    window.navigationBarColor = MaterialTheme.colors.surface.toArgb()
+
+    if (!isSystemInDarkTheme()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+            window.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+            )
+        } else {
+            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                window.decorView.systemUiVisibility =
+                    window.decorView.systemUiVisibility or
+                            View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            }
+        }
+
+    }
 }

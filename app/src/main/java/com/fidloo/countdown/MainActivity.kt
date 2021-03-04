@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fidloo.countdown.ui.theme.BarsTheming
 import com.fidloo.countdown.ui.theme.CountdownAppTheme
 
 class MainActivity : AppCompatActivity() {
@@ -57,8 +58,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             CountdownAppTheme {
+                BarsTheming(window)
                 CountDownApp(countdownViewModel)
             }
         }
@@ -67,11 +70,10 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun CountDownApp(countdownViewModel: CountdownViewModel) {
-    CountdownAppTheme {
-        Surface(color = MaterialTheme.colors.background) {
-            AppContent(countdownViewModel)
-        }
+    Surface(color = MaterialTheme.colors.background) {
+        AppContent(countdownViewModel)
     }
+
 }
 
 @Composable
@@ -97,7 +99,7 @@ fun AppContent(countdownViewModel: CountdownViewModel) {
 
         if (ticking) {
             Spacer(Modifier.size(48.dp))
-            if(progress != 0f) {
+            if (progress != 0f) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(200.dp),
                     progress = progress,
