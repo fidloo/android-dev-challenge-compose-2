@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -40,6 +41,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Stop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -76,6 +78,9 @@ fun CountDownApp(countdownViewModel: CountdownViewModel) {
 fun AppContent(countdownViewModel: CountdownViewModel) {
     val scrollState = rememberScrollState()
     val duration: TimerDuration by countdownViewModel.timerDuration.observeAsState(TimerDuration())
+    val ticking: Boolean by countdownViewModel.ticking.observeAsState(false)
+    val progress: Float by countdownViewModel.progress.observeAsState(0f)
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -89,30 +94,65 @@ fun AppContent(countdownViewModel: CountdownViewModel) {
         DurationSelector(duration)
         Spacer(Modifier.size(48.dp))
         Divider()
-        Spacer(Modifier.size(16.dp))
-        Keyboard(
-            onDigitClick = { countdownViewModel.appendToDuration(it) },
-            onBackClicked = { countdownViewModel.back() }
+
+        if (ticking) {
+            Spacer(Modifier.size(48.dp))
+            if(progress != 0f) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(200.dp),
+                    progress = progress,
+                    color = MaterialTheme.colors.primary,
+                    strokeWidth = 120.dp,
+                )
+            } else {
+                Text("Time's up\n", style = MaterialTheme.typography.h6)
+            }
+            Spacer(Modifier.size(48.dp))
+        } else {
+            Spacer(Modifier.size(16.dp))
+            Keyboard(
+                onDigitClick = { countdownViewModel.appendToDuration(it) },
+                onBackClicked = { countdownViewModel.back() }
+            )
+        }
+        BottomActions(
+            duration,
+            ticking,
+            onStartClick = { countdownViewModel.startTimer() },
+            onStopClick = { countdownViewModel.stopTimer() },
         )
-        BottomActions(duration, onStartClick = {})
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun BottomActions(duration: TimerDuration, onStartClick: () -> Unit) {
-    AnimatedVisibility(
-        visible = duration.isSet(),
-        enter = fadeIn(),
-        initiallyVisible = false,
-        exit = fadeOut()
-    ) {
-        FloatingActionButton(onClick = onStartClick) {
+fun BottomActions(
+    duration: TimerDuration,
+    ticking: Boolean,
+    onStartClick: () -> Unit,
+    onStopClick: () -> Unit,
+) {
+    if (ticking) {
+        FloatingActionButton(onClick = onStopClick) {
             Icon(
-                imageVector = Icons.Outlined.PlayArrow,
-                contentDescription = "Start Timer",
+                imageVector = Icons.Outlined.Stop,
+                contentDescription = "Stop Timer",
                 modifier = Modifier.size(24.dp)
             )
+        }
+    } else {
+        AnimatedVisibility(
+            visible = duration.isSet(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            FloatingActionButton(onClick = onStartClick) {
+                Icon(
+                    imageVector = Icons.Outlined.PlayArrow,
+                    contentDescription = "Start Timer",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
