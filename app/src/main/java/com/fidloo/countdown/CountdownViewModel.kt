@@ -109,8 +109,8 @@ data class TimerDuration(
     fun isSet() = hours != 0 || minutes != 0 || seconds != 0
     fun toCondensedFormat(): String {
         return hours.toString().padStart(2, '0') +
-                minutes.toString().padStart(2, '0') +
-                seconds.toString().padStart(2, '0')
+            minutes.toString().padStart(2, '0') +
+            seconds.toString().padStart(2, '0')
     }
 
     fun toSeconds() = hours * 60 * 60 + minutes * 60 + seconds
