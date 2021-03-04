@@ -17,45 +17,118 @@ package com.fidloo.countdown
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.Divider
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.fidloo.countdown.ui.theme.MyTheme
+import androidx.compose.ui.unit.dp
+import com.fidloo.countdown.ui.theme.CountdownAppTheme
 
 class MainActivity : AppCompatActivity() {
+
+    private val countdownViewModel: CountdownViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyTheme {
-                MyApp()
+            CountdownAppTheme {
+                CountDownApp(countdownViewModel)
             }
         }
     }
 }
 
-// Start building your app here!
 @Composable
-fun MyApp() {
-    Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+fun CountDownApp(countdownViewModel: CountdownViewModel) {
+    CountdownAppTheme {
+        Surface(color = MaterialTheme.colors.background) {
+            AppContent(countdownViewModel)
+        }
+    }
+}
+
+@Composable
+fun AppContent(countdownViewModel: CountdownViewModel) {
+    val scrollState = rememberScrollState()
+    val duration: TimerDuration by countdownViewModel.timerDuration.observeAsState(TimerDuration())
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .scrollable(scrollState, Orientation.Vertical),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Countdown", style = MaterialTheme.typography.h6)
+        Spacer(Modifier.size(48.dp))
+        DurationSelector(duration)
+        Spacer(Modifier.size(48.dp))
+        Divider()
+        Spacer(Modifier.size(16.dp))
+        Keyboard(
+            onDigitClick = { countdownViewModel.appendToDuration(it) },
+            onBackClicked = { countdownViewModel.back() }
+        )
+        BottomActions(duration, onStartClick = {})
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun BottomActions(duration: TimerDuration, onStartClick: () -> Unit) {
+    AnimatedVisibility(
+        visible = duration.isSet(),
+        enter = fadeIn(),
+        initiallyVisible = false,
+        exit = fadeOut()
+    ) {
+        FloatingActionButton(onClick = onStartClick) {
+            Icon(
+                imageVector = Icons.Outlined.PlayArrow,
+                contentDescription = "Start Timer",
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }
 
 @Preview("Light Theme", widthDp = 360, heightDp = 640)
 @Composable
 fun LightPreview() {
-    MyTheme {
-        MyApp()
+    CountdownAppTheme {
+        CountDownApp(countdownViewModel = CountdownViewModel())
     }
 }
 
 @Preview("Dark Theme", widthDp = 360, heightDp = 640)
 @Composable
 fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
+    CountdownAppTheme(darkTheme = true) {
+        CountDownApp(countdownViewModel = CountdownViewModel())
     }
 }
